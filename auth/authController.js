@@ -342,37 +342,60 @@ const bucket  = req.vendor.role === "vendor"?"rupay-lender-vendor-signup" : req.
           { new: true } 
       );
       }
-    }else if(req.vendor.role === "telecaller"){
-         updatedUser = await wfhmodel.find({mobile:req.vendor.vendorInfo.mobile})
-       updatedUser.aadharDetails = aadharDetails
-       await updatedUser.save()
-  // updatedUser = await wfhmodel.findById(vendorId)
-  //     updatedUser.aadharDetails = aadharDetails
-  //     await updatedUser.save()
-      if(updatedUser.panDetails && updatedUser.aadharDetails) {
-       vendor = await wfhmodel.findByIdAndUpdate(
-            updatedUser?._id,
-          { activeStatus : 'active'},
-          { new: true } 
-      );
-      }
-        const updatedUser = await wfhmodel.findOneAndUpdate({mobile:req.vendor.vendorInfo.mobile}, { $set: { aadharDetails: aadharDetails } },   { new: true }     )
+  //   }else if(req.vendor.role === "telecaller"){
+  //        updatedUser = await wfhmodel.find({mobile:req.vendor.vendorInfo.mobile})
+  //      updatedUser.aadharDetails = aadharDetails
+  //      await updatedUser.save()
+  // // updatedUser = await wfhmodel.findById(vendorId)
+  // //     updatedUser.aadharDetails = aadharDetails
+  // //     await updatedUser.save()
+  //     if(updatedUser.panDetails && updatedUser.aadharDetails) {
+  //      vendor = await wfhmodel.findByIdAndUpdate(
+  //           updatedUser?._id,
+  //         { activeStatus : 'active'},
+  //         { new: true } 
+  //     );
+  //     }
+  //        updatedUser = await wfhmodel.findOneAndUpdate({mobile:req.vendor.vendorInfo.mobile}, { $set: { aadharDetails: aadharDetails } },   { new: true }     )
     
-      // const isAadharVerified = false;
-       if(updatedUser?.aadharDetails){
+  //     // const isAadharVerified = false;
+  //      if(updatedUser?.aadharDetails){
 
-         if(updatedUser?.panDetails)  {
-           vendor = await wfhmodel.findByIdAndUpdate(
-             updatedUser?._id,
-             { activeStatus : 'active'},  
-             { new: true } 
-            );
-                  return res.status(200).send({success : true , message : "Aadhar verified",vendor ,updatedUser});
+  //        if(updatedUser?.panDetails)  {
+  //          vendor = await wfhmodel.findByIdAndUpdate(
+  //            updatedUser?._id,
+  //            { activeStatus : 'active'},  
+  //            { new: true } 
+  //           );
+  //                 return res.status(200).send({success : true , message : "Aadhar verified",vendor ,updatedUser});
 
-          }
-                return res.status(200).send({success : true , message : "Aadhar verified",updatedUser});
-        }
-    }
+  //         }
+  //               return res.status(200).send({success : true , message : "Aadhar verified",updatedUser});
+  //       }
+  //   }
+    }else if (req.vendor.role === "telecaller") {
+
+  updatedUser = await wfhmodel.findOneAndUpdate(
+    { mobile: req.vendor.vendorInfo.mobile },
+    { $set: { aadharDetails } },
+    { new: true }
+  );
+
+  if (updatedUser?.panDetails && updatedUser?.aadharDetails) {
+    vendor = await wfhmodel.findByIdAndUpdate(
+      updatedUser._id,
+      { activeStatus: "active" },
+      { new: true }
+    );
+  }
+
+  return res.status(200).send({
+    success: true,
+    message: "Aadhar verified",
+    updatedUser,
+    vendor
+  });
+}
 
     else{
          updatedUser = await subVenderModel.findById(vendorId)

@@ -116,8 +116,9 @@ app.use(express.urlencoded({ extended: true }));
     'http://localhost:5174',
     'http://localhost:5175',
     'http://localhost:5176',
-    'https://team.rupaylender.com',    
-    'https://check.rupaylender.com'
+    'https://team.rupaylender.com',
+    'https://check.rupaylender.com',
+    'https://rupay-lender-nextjs.vercel.app'
   ];
                                                
 app.use((req, res, next) => {
@@ -141,7 +142,8 @@ const corsOptions = {
     "https://adminweb.rupaylender.com","https://api.rupaylender.com",
     "https://www.rupaylender.com","http://localhost:5175","http://localhost:3000",
     "http://localhost:5174","https://team.rupaylender.com","http://localhost:5173",
-    "http://localhost:5176","https://sales.rupaylender.com", "https://check.rupaylender.com"],
+    "http://localhost:5176","https://sales.rupaylender.com", "https://check.rupaylender.com",
+    "https://rupay-lender-nextjs.vercel.app"],
   credentials: true, 
    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
 };

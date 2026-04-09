@@ -29,8 +29,8 @@ const sendOTP = async (phone,otp) => {
     // console.log(data)
     return data
       } catch (error) {
-        res.status(500).send({success : false,message : error.message})
         console.error('Error sending OTP:', error);
+        throw error;
       }
   };
 const sendSMS = async (phoneNumber, message) => {

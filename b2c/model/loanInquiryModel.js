@@ -79,9 +79,11 @@ const loanInquirySchema = new Schema(
    marketValueofProperty:{
     type: Number,
    },
+   // The b2c lead forms collect a bracket ("₹1 – 2 Crore"), not a figure, so
+   // this holds the label the applicant picked. Kept loose because older rows
+   // stored a plain amount.
    requiredLoan :{
-    type: Number,
-
+    type: String,
    },
        projectType: {
         type: String,

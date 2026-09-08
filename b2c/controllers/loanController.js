@@ -56,8 +56,17 @@ const loanController = async(req,res)=>{
             }
         }
         const {data} =await axios.get(`https://api.postalpincode.in/pincode/${pincode}`)
-        const district = data[0]?.PostOffice[0]?.District;
-        const state = data[0]?.PostOffice[0]?.State;
+        // PostOffice is null for an unknown pincode, so index it defensively —
+        // `PostOffice[0]` used to throw and surface as a raw JS error.
+        const postOffice = data?.[0]?.PostOffice?.[0];
+        if (!postOffice) {
+          return res.status(400).send({
+            success: false,
+            message: "Please enter a valid 6-digit pincode.",
+          });
+        }
+        const district = postOffice.District;
+        const state = postOffice.State;
 
         const applicationID = `${inquiryId(type)}${generateLoanId()}`
         const otp = generateOTP();
@@ -75,7 +84,13 @@ const loanController = async(req,res)=>{
         res.status(500).send({success : false,message :"Inquiry is not submitted"})
     //    }
     } catch (error) {
-        res.status(400).send({success: false, message: error.message });                                                                                                                                                                                                                      
+        // Keep the stack trace on the server; a raw JS message tells the
+        // visitor nothing and leaks internals.
+        console.error("inquiry-submission failed:", error);
+        res.status(400).send({
+          success: false,
+          message: "We could not submit your enquiry right now. Please try again.",
+        });
     }
    }
 const inquiryVerify = async (req, res) => {

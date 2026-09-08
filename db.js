@@ -1,7 +1,17 @@
 const mongoose = require("mongoose");
 
+// The connection string embeds the database password, so log the host only —
+// otherwise every startup writes the credentials into the server logs.
+const dbHost = (url = "") => {
+  try {
+    return new URL(url).host;
+  } catch {
+    return "(unreadable host)";
+  }
+};
+
 const connectDB = async () => {
-  console.log("Connecting to MongoDB...",process.env.MONGO_URL);
+  console.log("Connecting to MongoDB...", dbHost(process.env.MONGO_URL));
   try {
     await mongoose.connect(process.env.MONGO_URL, {
       useUnifiedTopology: true,

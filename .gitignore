@@ -121,3 +121,10 @@ tools/dev
 .env
 .enves
 *.json
+
+# The blanket *.json and *-lock.* rules above swallowed the manifest itself, so
+# the repo had no package.json. The deploy workflow checks the repo out and runs
+# npm install, which meant every run since 2025 failed on ENOENT before it ever
+# reached the server.
+!package.json
+!package-lock.json

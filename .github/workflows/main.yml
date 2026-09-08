@@ -21,22 +21,36 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-   
-
       - name: Deploy to AWS EC2
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.AWS_SSH_KEY }}
           HOST: ${{ secrets.AWS_HOST }}
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${HOST} "
-          cd ~/web-rupay-lender-back &&
-          git status &&
-          git add . &&
-          git commit -m "mesage"
-          git pull origin main &&
-          git merge origin/main
-          npm install &&
-          pm2 restart all &&
-          sudo systemctl reload nginx && 
-          pm2 logs
-          "
+          # Handing the key to the step as an env var is not enough: ssh reads
+          # its key from a file, so nothing was ever authenticating.
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.AWS_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          # bash -s with a quoted heredoc. The previous version inlined the
+          # script inside a double-quoted ssh argument, and the quotes around
+          # the commit message closed that string early — the server actually
+          # received `git commit -m mesage git pull origin main`.
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key "ubuntu@${HOST}" bash -s <<'REMOTE'
+          set -e
+          cd ~/web-rupay-lender-back
+
+          # The server holds files the repo does not (.env, and until now
+          # package.json), so local edits are parked in a commit rather than
+          # thrown away.
+          git add -A
+          git commit -m "server: local changes before deploy" || true
+
+          git pull origin main
+          npm install
+          pm2 restart all
+          sudo systemctl reload nginx
+
+          # `pm2 logs` streams until killed, so the job used to sit here until
+          # the runner timed out. `status` returns.
+          pm2 status
+          REMOTE

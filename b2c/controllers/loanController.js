@@ -151,7 +151,14 @@ let duplicateInquiry = false;
       req.inquiry = null;
        res.status(200).send({success:true,message:  "inquiry submitted",loanInquiry})
     } catch (error) {
-       res.status(500).send({success: false,message: error.message})
+       // The visitor has already verified their number by this point, so a
+       // schema message like "`Home Loan` is not a valid enum value" surfaced
+       // in the OTP dialog. Keep it in the log where it can be acted on.
+       console.error("inquiry-verify failed:", error);
+       res.status(500).send({
+         success: false,
+         message: "We could not save your enquiry. Please try again, or call us on +91-9821718711.",
+       });
     }
    };
   const resendOtp = async(req,res)=>{
@@ -202,7 +209,11 @@ let duplicateInquiry = false;
       // inquiry,
     });
     } catch (error) {
-       res.status(500).send({success: false,message: error.message})
+       console.error("faqs-inquiry failed:", error);
+       res.status(500).send({
+         success: false,
+         message: "We could not submit your enquiry right now. Please try again.",
+       });
     }
    }
 module.exports = {loanController,inquiryVerify,resendOtp,getInquiries,faqsInquiry}

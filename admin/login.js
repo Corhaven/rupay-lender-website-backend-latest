@@ -124,18 +124,22 @@ const deleteSubAdmin = async (req, res) => {
 //   };
   const login = async (req, res) => {
       try {
-        const { email } = req.body;
-      // console.log(email)
-        const admin = await adminModel.findOne({ email });
-        if(!admin.length ==0) return res.status(400).send({success : false, message:"Wrong Email"})
+        const typed = typeof req.body?.email === 'string' ? req.body.email.trim() : '';
+        if (!typed) return res.status(400).send({ success: false, message: "Please enter your email" })
+        // Match regardless of case or stray spaces, so "Admin@..." from a phone keyboard still finds the account.
+        const admin = await adminModel.findOne({ email: typed }).collation({ locale: 'en', strength: 2 });
+        // findOne gives null, not an empty array, when nobody matches. The old `admin.length`
+        // check threw on that null and turned every wrong email into a 500.
+        if (!admin) return res.status(400).send({ success: false, message: "Wrong Email" })
+        const email = admin.email;
        const otp = generateOTP();
-  
-      const otpExpires = Date.now() + 300000; 
+
+      const otpExpires = Date.now() + 300000;
       const payload = {
           email, otp , otpExpires
       }
        const emailOtpToken = jwt.sign(payload, process.env.OTPSECRET, { expiresIn: '5m' });
-   await sendOtpEmail(email,otp) 
+   await sendOtpEmail(email,otp)
     res.status(200).send({success : true,message :"send otp on email",emailOtpToken})
 
       }catch(error){
@@ -154,7 +158,7 @@ const deleteSubAdmin = async (req, res) => {
       res.status(200).send({success:true ,token,message:"success" });
         // res.status(200).send({ success: true, message: "Email verified" });
       } else {
-        res.status(500).send({ success: false, message: "Invalid or expired OTP" });
+        res.status(400).send({ success: false, message: "Invalid or expired OTP" });
       }  
       } catch (error) {
         res.status(500).send({ success: false, message: error.message });

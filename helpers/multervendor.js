@@ -100,16 +100,21 @@ const s3Storage7 = multerS3({
 });
 const uploadEvent = multer({storage : s3Storage7,limits: { fileSize: 1024 * 1024 * 100 },})
 
+// The old "rupay-lender-blog" bucket lives in an AWS account that is switched off:
+// every upload came back "AllAccessDisabled". This bucket is in the account whose
+// keys the server holds, and a bucket policy already makes objects public, so no
+// per-object ACL is set here — the bucket has ACLs disabled (BucketOwnerEnforced)
+// and would reject one.
 const s3Storage8 = multerS3({
   s3: s3,
-  bucket: "rupay-lender-blog", // change it as per your project requirement
-  acl: "public-read", // storage access type
+  bucket: "rupay-lender-bucket",
+  contentType: multerS3.AUTO_CONTENT_TYPE, // so browsers show the image instead of downloading it
   metadata: (req, file, cb) => {
       cb(null, {fieldname: file.fieldname})
   },
   key: (req, file, cb) => {
-      const fileName = `/${file.fieldname}_${Date.now()}_${file.originalname}`;
-      cb(null, fileName);
+      const safeName = file.originalname.replace(/[^\w.-]+/g, "-");
+      cb(null, `blog/${file.fieldname}_${Date.now()}_${safeName}`);
   },
 });
 const uploadBlog = multer({storage : s3Storage8,limits: { fileSize: 1024 * 1024 * 100 },})

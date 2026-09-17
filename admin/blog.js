@@ -4,7 +4,7 @@ const blogModel = require("../models/blogModel");
     try {
         const files = req.files
         // console.log(files)
-        const image = files.image ? files.image[0].location : " "
+        const image = files && files.image ? files.image[0].location : " "
         // pic: files.pic ? files.pic[0].location : " ",
 
       const { title, description, bloggerName ,type,slug,keyPoints} = req.body;

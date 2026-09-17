@@ -62,7 +62,16 @@ adminRouter.get("/search-vendor/:keyword",authMiddleware,authorize(['admin','bac
 const imgObject = uploadBlog.fields([
     { name: 'image', maxCount: 1 },
     ])
-adminRouter.post("/create-blog",authMiddleware,imgObject,authorize(['admin','blogger']),createBlog)
+// A failed image upload would otherwise fall through to Express' own HTML error
+// page, which the panel can only show as an empty 500.
+const blogImage = (req,res,next)=> imgObject(req,res,(err)=>{
+    if(err){
+        console.error("blog image upload failed:",err.message)
+        return res.status(502).send({success : false, message : "Could not upload the image. Please try again."})
+    }
+    next()
+})
+adminRouter.post("/create-blog",authMiddleware,blogImage,authorize(['admin','blogger']),createBlog)
     // getBlog
  adminRouter.get("/:service/:id",authMiddleware,authorize(['admin']),getSingleServices)  
  adminRouter.get("/:service",authMiddleware,authorize(['admin']),getServices)   

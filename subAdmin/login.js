@@ -15,20 +15,23 @@ const wfhmodel = require("../carrier/model/wfhmodel");
 
   const login = async (req, res) => {
     try {
-      const { email } = req.body;
-    console.log(email)
-      const subAdmin = await subAdmModel.findOne({ email });
-      console.log(subAdmin?.active)
-      if(!subAdmin?.active) return res.status(201).send({success : false, message:"You are inactive"})
-      if(!subAdmin.length == 0) return res.status(201).send({success : false, message:"Wrong Email"})
+      const typed = typeof req.body?.email === 'string' ? req.body.email.trim() : '';
+      if(!typed) return res.status(400).send({success : false, message:"Please enter your email"})
+      // Match regardless of case or stray spaces, so an email typed on a phone still finds the account.
+      const subAdmin = await subAdmModel.findOne({ email: typed }).collation({ locale: 'en', strength: 2 });
+      // An unknown email used to answer "You are inactive", which sent people looking
+      // for the wrong problem.
+      if(!subAdmin) return res.status(400).send({success : false, message:"Wrong Email"})
+      if(!subAdmin.active) return res.status(403).send({success : false, message:"You are inactive"})
+      const email = subAdmin.email;
      const otp = generateOTP();
- 
-    const otpExpires = Date.now() + 300000; 
+
+    const otpExpires = Date.now() + 300000;
     const payload = {
         email, otp , otpExpires
     }
      const emailOtpToken = jwt.sign(payload, process.env.OTPSECRET, { expiresIn: '1h' });
- await sendOtpEmail(email,otp) 
+ await sendOtpEmail(email,otp)
   res.status(200).send({success : true,message :"send otp on email",emailOtpToken})
       // const token = jwt.sign({ id: subAdmin._id, username: subAdmin.username, role: subAdmin.role,department : subAdmin.department,permissions : subAdmin.permissions ,referral : subAdmin.referral,referralLink:subAdmin.referralLink}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
       // res.status(200).send({success:true ,token,department:subAdmin.department,role: subAdmin.role,permissions : subAdmin.permissions,message:"success" });

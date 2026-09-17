@@ -1,5 +1,13 @@
 const blogModel = require("../models/blogModel");
 
+// The slug becomes part of a URL, so a value typed as "/my-post/" has to be
+// stored as "my-post" — otherwise /blog/my-post asks for a slug nothing matches.
+const cleanSlug = (value) => String(value || "")
+  .trim()
+  .toLowerCase()
+  .replace(/^\/+|\/+$/g, "")
+  .replace(/\s+/g, "-");
+
  const createBlog = async (req, res) => {
     try {
         const files = req.files
@@ -8,7 +16,7 @@ const blogModel = require("../models/blogModel");
         // pic: files.pic ? files.pic[0].location : " ",
 
       const { title, description, bloggerName ,type,slug,keyPoints} = req.body;
-      const newBlog = new blogModel({ title, description, bloggerName, image,type,slug,keyPoints });
+      const newBlog = new blogModel({ title, description, bloggerName, image,type,slug: cleanSlug(slug) || cleanSlug(title),keyPoints });
       await newBlog.save();
       res.status(201).json(newBlog);
     } catch (error) {

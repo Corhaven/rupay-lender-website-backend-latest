@@ -552,14 +552,18 @@ if(getImg) return res.status(200).send({success:true,message:"fetch image succes
   try {
       
     const {slug} = req.params
-    // console.log(id)
-    const blogDetails = await blogModel.findOne({slug:slug})
+    // Older posts were saved with the slug wrapped in slashes ("/my-post/"), so match
+    // on the bare slug and ignore case rather than sending those readers to an error.
+    const bare = String(slug || "").trim().replace(/^\/+|\/+$/g, "")
+    const blogDetails = await blogModel.findOne({
+      slug: { $in: [bare, `/${bare}/`] }
+    }).collation({ locale: 'en', strength: 2 })
     // console.log(blogDetails)
     if(blogDetails){
       return res.status(200).send({success:true,message:"fetch image successfull",blogDetails})
-    }   
-return res.status(400).send({
-  success:true,
+    }
+return res.status(404).send({
+  success:false,
   message: "No blogs found"
 })
   } catch (error) {

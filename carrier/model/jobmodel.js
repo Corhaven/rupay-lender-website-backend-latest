@@ -6,7 +6,7 @@ const jobSchema = new mongoose.Schema({
     jobTitle: { type: String, required: true },
     location: { type: String, required: true },
     categories: { type: String, required: true },
-    postedOn:   { type: String, default: dayjs(Date.now()).format('DD-MM-YYYY') },
+    postedOn:   { type: String, default: () => dayjs().format('DD-MM-YYYY') },
     experience: { type: String, required: true },
     whatWeLooking: { type: [String], required: true },
     whatWillBeDoing: { type: String, required: true },

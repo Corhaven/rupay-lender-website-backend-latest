@@ -9,8 +9,8 @@ const EventSubcriberSchema = new mongoose.Schema({
     },
     date :{
         type : String,
-        // type: String, default: dayjs(Date.now()).format('DD MMM YYYY')
-        default :  dayjs(Date.now()).format("DD-MMM-YYYY")
+        // type: String, default: () => dayjs().format('DD MMM YYYY')
+        default :  () => dayjs().format("DD-MMM-YYYY")
     },
     isSubcribe:{
         type: Boolean,

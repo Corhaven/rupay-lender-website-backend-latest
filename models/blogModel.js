@@ -2,6 +2,10 @@
 const mongoose = require('mongoose');
 // const { currentMonthAndYearInString } = require('../helpers/hashpassword');
 const dayjs = require('dayjs');
+const utc = require('dayjs/plugin/utc');
+const timezone = require('dayjs/plugin/timezone');
+dayjs.extend(utc);
+dayjs.extend(timezone);
 // currentMonthAndYearInString
 const blogSchema = new mongoose.Schema({
   title: {
@@ -34,7 +38,12 @@ keyPoints:{
 },
   date:{
                   type:String,
-                  default:dayjs(Date.now()).format("DD MMM YYYY")
+                  // A plain value here is computed once, when this file is first loaded,
+                  // so every post a server process wrote carried the date of its last
+                  // restart. A function runs per document.
+                  // The server runs on UTC, so a post published late in the evening
+                  // in India would otherwise be dated the previous day.
+                  default: () => dayjs().tz('Asia/Kolkata').format("DD MMM YYYY")
               }
 },{
   timestamps:true

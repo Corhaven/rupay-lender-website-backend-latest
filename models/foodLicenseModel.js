@@ -80,7 +80,7 @@ const foodLicenseSchema = new mongoose.Schema({
      },
      createdAt:{
          type:String,
-         default:dayjs(Date.now()).format("MMM D, YYYY h:mm A")
+         default:() => dayjs().format("MMM D, YYYY h:mm A")
      }
   
 });

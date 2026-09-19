@@ -27,7 +27,7 @@ const CibilUserSchema = new mongoose.Schema({
     },
   createdAt: {
     type: String,
-    default: dayjs(Date.now()).format('DD-MM-YYYY')},
+    default: () => dayjs().format('DD-MM-YYYY')},
   
 },
 {timestamps: true}

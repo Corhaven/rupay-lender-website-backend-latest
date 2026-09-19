@@ -236,7 +236,7 @@ const subVendorSchema = new mongoose.Schema(
   walletBalance : { type: Number, default: 0 },
  
   memberSince:
-   { type: String, default: dayjs(Date.now()).format('DD MMM YYYY') },
+   { type: String, default: () => dayjs().format('DD MMM YYYY') },
    companyDetail : companyDetailSchema,
    bankDetail : bankDetailSchema,
    gstDetails :{

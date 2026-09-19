@@ -141,7 +141,7 @@ const statusScehma =new mongoose.Schema({
       'itrComution1','itrComution2', 'itrComution3','oneBankStatementCurrentAccount' ,'oneYearSavingAccountStatement', 'sanctionLetter' ,'insurancePolicy','rc',]
   }, 
    changeStatus:
-     { type: String, default: dayjs(Date.now()).format('DD MMM YYYY') },
+     { type: String, default: () => dayjs().format('DD MMM YYYY') },
 },{timestamps:true}
 )
 const detailsScehma = new Schema({  personalDetail :{
@@ -272,7 +272,7 @@ const loanSchema = new Schema(
        },
        rate :{type: String,},
      createdLoan:
-     { type: String, default: dayjs(Date.now()).format('DD MMM YYYY') },
+     { type: String, default: () => dayjs().format('DD MMM YYYY') },
      updatedAt: { type: Date, default: Date.now },
             
   },{ timestamps: true} 

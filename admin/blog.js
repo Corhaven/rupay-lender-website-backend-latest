@@ -12,8 +12,17 @@ const cleanSlug = (value) => String(value || "")
     try {
         const files = req.files
         // console.log(files)
-        const image = files && files.image ? files.image[0].location : " "
-        // pic: files.pic ? files.pic[0].location : " ",
+        // The panel appends its image field whether or not a file was picked, so a
+        // post with no cover arrives as the text "null". Accept an already uploaded
+        // URL as well, and say so plainly instead of saving a post with no cover.
+        const uploaded = files && files.image ? files.image[0].location : ""
+        const typedUrl = typeof req.body.image === 'string' && /^https?:\/\//i.test(req.body.image.trim())
+          ? req.body.image.trim()
+          : ""
+        const image = uploaded || typedUrl
+        if(!image){
+          return res.status(400).json({ success: false, error: "Please choose a cover image before publishing.", message: "Please choose a cover image before publishing." })
+        }
 
       const { title, description, bloggerName ,type,slug,keyPoints} = req.body;
       const newBlog = new blogModel({ title, description, bloggerName, image,type,slug: cleanSlug(slug) || cleanSlug(title),keyPoints });

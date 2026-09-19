@@ -93,7 +93,7 @@ const loanInquirySchema = new Schema(
       type : String,
   },
      createdInquiry:
-     { type: String, default: dayjs(Date.now()).format('DD-MM-YYYY') },
+     { type: String, default: () => dayjs().format('DD-MM-YYYY') },
    profession :{
     type: String,
      enum :['doctor', 'ca','architect']

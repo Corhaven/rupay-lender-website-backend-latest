@@ -36,7 +36,7 @@ const b2cStatusHistorySchema = new mongoose.Schema({
        'home loan balance transfer','personal loan balance transfer','credit card','motor insurance','web dev','used car loan','professional loan','social media','graphic design',], 
          },
      updatedDate:
-     { type: String, default: dayjs(Date.now()).format('DD-MM-YYYY')},
+     { type: String, default: () => dayjs().format('DD-MM-YYYY')},
 
 },{timestamps:true})
 module.exports =  mongoose.model('b2cStatusHistory',b2cStatusHistorySchema)

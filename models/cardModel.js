@@ -80,7 +80,7 @@ const cardSchema = new mongoose.Schema({
     },
 
       createdCard:
-      { type: String, default: dayjs(Date.now()).format('DD MMM YYYY') },
+      { type: String, default: () => dayjs().format('DD MMM YYYY') },
       paymentStatus: { type: String, enum: ['paid', 'unpaid'], default: 'unpaid' },
       utrNo :{type: String,default : " "},
       uploadInvoice :{type: String,default : " "},

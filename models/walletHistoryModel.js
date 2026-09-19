@@ -34,7 +34,7 @@ const walletHistorySchema = new mongoose.Schema({
   
   txnDate: {
     type: String,
-    default: dayjs(Date.now()).format("DD-MMM-YYYY"),
+    default: () => dayjs().format("DD-MMM-YYYY"),
   },
  
 },  { timestamps: true });

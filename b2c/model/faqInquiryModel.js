@@ -24,7 +24,7 @@ message:{
     },
   
       createdAt:
-      { type: String, default: dayjs(Date.now()).format('DD-MM-YYYY') },
+      { type: String, default: () => dayjs().format('DD-MM-YYYY') },
    
 },{timestamps:true})
 

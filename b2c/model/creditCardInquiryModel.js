@@ -40,7 +40,7 @@ const cardSchema = new mongoose.Schema({
         type: String,
       },
       createdCard:
-      { type: String, default: dayjs(Date.now()).format('DD-MM-YYYY') },
+      { type: String, default: () => dayjs().format('DD-MM-YYYY') },
    
 },{timestamps:true})
 

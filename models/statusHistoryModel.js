@@ -24,6 +24,6 @@ const statusHistoryScehma =new mongoose.Schema({
         'itrComution1','itrComution2', 'itrComution3','oneBankStatementCurrentAccount' ,'oneYearSavingAccountStatement', 'sanctionLetter' ,'insurancePolicy','rc',]
     }, 
      changeStatus:
-    { type: String, default: dayjs(Date.now()).format('DD MMM YYYY')  },
+    { type: String, default: () => dayjs().format('DD MMM YYYY')  },
   },{timestamps:true})
   module.exports = mongoose.model('statusHistory',statusHistoryScehma)
